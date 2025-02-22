@@ -2,23 +2,35 @@ import datetime
 import os
 import pandas as pd
 import shutil
-from typing import Optional
+from typing import Union
 
 
 class ExtractUtils:
-    """Utility class for handling file operations."""
+    """
+    Utility class for handling file operations such as copying and loading data.
+    """
 
     @staticmethod
-    def create_timestamp():
+    def create_timestamp() -> int:
         """
         Generate a timestamp for file naming.
+
+        :return: Integer representing the current timestamp
         """
         return int(datetime.datetime.now().timestamp())
 
     @staticmethod
-    def copy_file(source: str, destination_folder: str):
+    def copy_file(source: str, destination_folder: str) -> Union[str, None]:
         """
         Copy a file to the destination folder with a timestamped filename.
+
+        - Checks if the file exists before copying.
+        - Creates a new filename with a timestamp to prevent overwriting.
+        - Copies the file to the specified directory.
+
+        :param source: The full path to the source file.
+        :param destination_folder: The directory where the file will be copied.
+        :return: The path of the copied file, or an error message if the file does not exist.
         """
         if not os.path.isfile(source):
             return f"Error, file in location {source} does not exist"
@@ -32,8 +44,11 @@ class ExtractUtils:
         return destination_path
 
     @staticmethod
-    def load_to_data_frame(destination_path):
+    def load_to_data_frame(destination_path: str) -> pd.DataFrame:
         """
-        Load an Excel file into a pandas DataFrame.
+        Load an Excel file into a Pandas DataFrame.
+
+        :param destination_path: The full path to the Excel file.
+        :return: A Pandas DataFrame containing the loaded data.
         """
         return pd.read_excel(destination_path)
