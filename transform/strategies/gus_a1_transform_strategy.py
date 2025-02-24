@@ -77,12 +77,20 @@ class A1TransformStrategy(TransformStrategy):
         return self.df_a1
 
     def remove_unnecessary_columns(self):
-        self.df_a1 = TransformUtils.keep_relevant_columns(self.df_a1, REPORTS_COLUMNS["A1"])
+        mapping = [
+        "PAIRPORT",
+        "AD",
+        "SCHEDNS",
+        "PASSFREIGH",
+        "AIRLINEC",
+        "AIRCRAFTTY",
+        "PAX ON BOARD",
+        "SEATAV",
+    ]
+        self.df_a1 = TransformUtils.keep_relevant_columns(self.df_a1, mapping)
         return self.df_a1
 
     def aggregate_report(self):
-
-
         self.df_a1 = self.df_a1.groupby(
             ["PAIRPORT", "AD", "AIRLINEC", "AIRCRAFTTY", "PASSFREIGH", "SCHEDNS"]
         ).agg({

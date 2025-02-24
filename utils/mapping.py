@@ -52,7 +52,7 @@ REPORT_MAPPINGS = {
         "Operacja": "AD",
         "Przewoźnik ICAO": "AIRLINEC",
         "Model samolotu": "AIRCRAFTTY",
-        "Pax Capacity": "SEATAV"
+        "PAX Capacity": "SEATAV"
     },
     "B1": {
         "PAIRPORT": "PAIRPORT",
