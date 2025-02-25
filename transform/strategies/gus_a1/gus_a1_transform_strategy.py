@@ -1,7 +1,7 @@
 import pandas as pd
 from transform.strategies.abstract_transform_strategy import TransformStrategy
-from utils.mapping import REPORT_MAPPINGS, REPORTS_COLUMNS, REPORTS_ROWS, FLIGHT_TYPES
-from utils.transform_utils import TransformUtils
+from transform.strategies.gus_a1.gus_a1_config import REPORT_MAPPINGS, REPORTS_ROWS, FLIGHT_TYPES
+from transform.transform_utils import TransformUtils
 
 
 class A1TransformStrategy(TransformStrategy):
@@ -34,7 +34,7 @@ class A1TransformStrategy(TransformStrategy):
 
         :return: Pandas DataFrame with renamed columns.
         """
-        mapping = REPORT_MAPPINGS["A1"]
+        mapping = REPORT_MAPPINGS
         self.df_a1 = self.df
         self.df_a1 = TransformUtils.rename_columns(self.df_a1, mapping)
         return self.df_a1
@@ -68,15 +68,34 @@ class A1TransformStrategy(TransformStrategy):
         """
         self.df_a1["PASSFREIGH"] = self.df_a1["Typ rejsu"].map(FLIGHT_TYPES["PASSFREIGH"])
         self.df_a1["SCHEDNS"] = self.df_a1["Typ rejsu"].map(FLIGHT_TYPES["SCHEDNS"])
-        print(self.df_a1.head())
+        self.df_a1["FLIGHT"] = self.df_a1['AD']
         return self.df_a1
 
-    def remove_unnecessary_rows(self):
+    def remove_unnecessary_rows(self) -> pd.DataFrame:
+        """
+        Remove unnecessary rows based on the type of flight.
+
+        This method filters out rows that do not belong to the predefined flight types
+        required for the A1 report. It uses a predefined mapping (`REPORTS_ROWS["A1"]`)
+        to determine which flight types should be retained.
+
+        Returns:
+        pd.DataFrame: A filtered DataFrame containing only relevant flight types.
+        """
         col_filter = "Typ rejsu"
-        self.df_a1 = TransformUtils.keep_relevant_rows(self.df_a1, col_filter, REPORTS_ROWS["A1"])
+        self.df_a1 = TransformUtils.keep_relevant_rows(self.df_a1, col_filter, REPORTS_ROWS)
         return self.df_a1
 
-    def remove_unnecessary_columns(self):
+    def remove_unnecessary_columns(self) -> pd.DataFrame:
+        """
+        Remove unnecessary columns from the DataFrame.
+        This method ensures that only the relevant columns required for the A1 report
+        are retained in the DataFrame. It filters the DataFrame using a predefined list
+        of column names.
+
+        Returns:
+        pd.DataFrame: A DataFrame containing only the necessary columns for the report.
+        """
         mapping = [
         "PAIRPORT",
         "AD",
@@ -86,33 +105,68 @@ class A1TransformStrategy(TransformStrategy):
         "AIRCRAFTTY",
         "PAX ON BOARD",
         "SEATAV",
+        "FLIGHT"
     ]
         self.df_a1 = TransformUtils.keep_relevant_columns(self.df_a1, mapping)
         return self.df_a1
 
-    def aggregate_report(self):
+    def aggregate_report(self) -> pd.DataFrame:
+        """
+        Aggregates the report by summing PAX_ON_BOARD and SEATAV,
+        and counting occurrences of AD (stored in a new column FLIGHT).
+
+        Returns:
+        pd.DataFrame: The aggregated DataFrame.
+        """
         self.df_a1 = self.df_a1.groupby(
-            ["PAIRPORT", "AD", "AIRLINEC", "AIRCRAFTTY", "PASSFREIGH", "SCHEDNS"]
+            ["PAIRPORT", "FLIGHT", "AD", "SCHEDNS", "PASSFREIGH", "AIRLINEC", "AIRCRAFTTY"],
+            as_index=False
         ).agg({
-            "PAX ON BOARD": "sum",
-            "SEATAV": "sum",
-            "AD": ("FLIGHT", "count")
-        }).reset_index()
+            "PAX ON BOARD": sum,
+            "SEATAV": sum,
+            "FLIGHT": "count"
+        })
         return self.df_a1
 
-    def modify_AD_data(self):
+    def modify_AD_data(self) -> pd.DataFrame:
+        """
+        Modify the 'AD' column values based on a predefined mapping.
+
+        This method replaces values in the 'AD' column using a dictionary mapping.
+        'P' is replaced with 1, and 'O' is replaced with 2.
+
+        Returns:
+            pd.DataFrame: The updated DataFrame with modified 'AD' column values.
+        """
         mapping = {"P": 1, "O": 2}
         self.df_a1 = TransformUtils.replacing_data(self.df_a1, 'AD', mapping)
         return self.df_a1
 
     def fill_cargo_from_total(self):
+        # read cargo config
+        # join config with normalized dataframe
         pass
 
     def format_remaining_data(self):
         self.df_a1 = TransformUtils.handle_null_values(self.df_a1)
         return self.df_a1
 
-    def add_constant_data(self):
+    def add_static_data(self):
+        self.df_a1["TABLE"] = 'A1'
+        self.df_a1["COUNTRY"] = 'EP'
+        self.df_a1["RAIRPORT"] = 'EPGD'
+        self.df_a1["FREIGHT ON BOARD"] = 0
+        return self.df_a1
+
+    def add_date_columns(self):
+        date = TransformUtils.get_middle_record_data(self.df)
+        self.df_a1["YEAR"] = date.strftime("%y")
+        self.df_a1["PERIOD"] = date.month
+
+    def correct_columns_order(self):
+        pass
+
+    def transform(self):
         pass
 
 

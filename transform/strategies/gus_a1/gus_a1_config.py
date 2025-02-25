@@ -1,6 +1,7 @@
 
-REPORTS_COLUMNS = {
-    "A1": [
+# import gus_a1_cargo_utils
+
+REPORTS_COLUMNS = [
         "PAIRPORT",
         "AD",
         "SCHEDNS",
@@ -13,30 +14,18 @@ REPORTS_COLUMNS = {
         "TABLE",
         "COUNTRY",
         "RAIRPORT"
-    ],
-    "B1": [
-        "PAIRPORT",
-        "AD",
-        "SCHEDNS",
-        "PASSFREIGH",
-        "AIRLINEC",
-        "PAX_CARRIED",
-        "TABLE",
-        "COUNTRY",
-        "RAIRPORT"
-    ],
-    "C1": [
-        "PAIRPORT",
-        "AD",
-        "SCHEDNS",
-        "FLIGHT_COUNT",
-        "TABLE",
-        "COUNTRY",
-        "RAIRPORT"
     ]
+
+CARGO = {
+
+    'WAW': {
+        'columns' : ['col1', 'col2']
+    }
+
 }
 
-REPORTS_ROWS = {"A1": [
+
+REPORTS_ROWS = [
                     'Rejsowy',
                     'Przekierowany do GDN',
                     'Czarterowy',
@@ -44,37 +33,15 @@ REPORTS_ROWS = {"A1": [
                     'Cargo',
                     'Cargo/Regularny'
                 ]
-}
 
 REPORT_MAPPINGS = {
-    "A1": {
+
         "Port ICAO": "PAIRPORT",
         "Operacja": "AD",
         "Przewoźnik ICAO": "AIRLINEC",
         "Model samolotu": "AIRCRAFTTY",
         "PAX Capacity": "SEATAV"
-    },
-    "B1": {
-        "PAIRPORT": "PAIRPORT",
-        "AD": "AD",
-        "SCHEDNS": "SCHEDNS",
-        "PASSFREIGH": "PASSFREIGH",
-        "AIRLINEC": "AIRLINEC",
-        "PAX_CARRIED": "PAX_ON_BOARD",
-        "TABLE": "B1",
-        "COUNTRY": "EP",
-        "RAIRPORT": "EPGD"
-    },
-    "C1": {
-        "PAIRPORT": "PAIRPORT",
-        "AD": "AD",
-        "SCHEDNS": "SCHEDNS",
-        "FLIGHT_COUNT": "FLIGHT",
-        "TABLE": "C1",
-        "COUNTRY": "EP",
-        "RAIRPORT": "EPGD"
     }
-}
 
 FLIGHT_TYPES = {
     "PASSFREIGH": {

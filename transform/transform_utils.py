@@ -1,4 +1,4 @@
-import os
+import datetime
 import pandas as pd
 import shutil
 from typing import Optional
@@ -58,6 +58,18 @@ class TransformUtils:
         """
         dataframe = dataframe.fillna(0)
         return dataframe
+
+    @staticmethod
+    def get_middle_record_data(dataframe: pd.DataFrame) -> datetime:
+        middle_index = len(dataframe) // 2
+        first_column = dataframe.columns[0]
+        mid_value = dataframe.loc[middle_index, first_column]
+        mid_data = pd.to_datetime(mid_value)
+        return mid_data
+
+
+
+
 
 
 

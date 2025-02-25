@@ -1,7 +1,7 @@
 from typing import Union
 import pandas as pd
 from extract.strategies.abstract_extract_strategy import ExtractStrategy
-from utils.extract_utils import ExtractUtils
+from extract.extract_utils import ExtractUtils
 
 
 class InflotExtractStrategy(ExtractStrategy):
