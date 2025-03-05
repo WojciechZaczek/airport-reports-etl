@@ -51,7 +51,7 @@ class A1TransformStrategy(TransformStrategy):
 
         :return: Pandas DataFrame with the added 'PAX ON BOARD' column.
         """
-        self.df_a1["PAX ON BOARD"] = self.df_a1["TTL"] + self.df_a1["Infant"]
+        self.df_a1["PAX ON BOARD"] = self.df_a1["TTL"].fillna(0) + self.df_a1["Infant"].fillna(0)
         return self.df_a1
 
     def create_new_columns(self) -> pd.DataFrame:
@@ -213,9 +213,3 @@ class A1TransformStrategy(TransformStrategy):
 
     def transform(self):
         pass
-
-
-
-
-
-
