@@ -48,6 +48,7 @@ class ExtractUtils:
         """
         Load an Excel file into a Pandas DataFrame.
 
+        :param sheet_name:
         :param destination_path: The full path to the Excel file.
         :return: A Pandas DataFrame containing the loaded data.
         """

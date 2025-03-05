@@ -1,6 +1,7 @@
 import pandas as pd
+from transform.strategies.gus_a1.gus_a1_cargo_utils import CargoData
 from transform.strategies.abstract_transform_strategy import TransformStrategy
-from transform.strategies.gus_a1.gus_a1_config import REPORT_MAPPINGS, REPORTS_ROWS, FLIGHT_TYPES
+from transform.strategies.gus_a1.gus_a1_config import REPORT_MAPPINGS, REPORTS_ROWS, FLIGHT_TYPES,REPORTS_COLUMNS
 from transform.transform_utils import TransformUtils
 
 
@@ -8,13 +9,14 @@ class A1TransformStrategy(TransformStrategy):
     """
     Strategy class for transforming data into the A1 report format.
     """
-    def __init__(self, df: pd.DataFrame) -> None:
+    def __init__(self, df_inflot: pd.DataFrame, df_total: pd.DataFrame) -> None:
         """
         Initializes the transformation strategy with the input DataFrame.
 
         :param df: Original Pandas DataFrame containing raw data.
         """
-        self.df = df
+        self.df_total = df_total
+        self.df_inflot = df_inflot
         self.df_a1 = pd.DataFrame()
 
     def get_data(self) -> pd.DataFrame:
@@ -35,7 +37,7 @@ class A1TransformStrategy(TransformStrategy):
         :return: Pandas DataFrame with renamed columns.
         """
         mapping = REPORT_MAPPINGS
-        self.df_a1 = self.df
+        self.df_a1 = self.df_inflot
         self.df_a1 = TransformUtils.rename_columns(self.df_a1, mapping)
         return self.df_a1
 
@@ -142,29 +144,72 @@ class A1TransformStrategy(TransformStrategy):
         self.df_a1 = TransformUtils.replacing_data(self.df_a1, 'AD', mapping)
         return self.df_a1
 
-    def fill_cargo_from_total(self):
-        # read cargo config
-        # join config with normalized dataframe
-        pass
+    def fill_cargo_from_total(self) -> pd.DataFrame:
+        total = CargoData(self.df_total)
+        self.df_total = total.preparing_columns()
+        self.df_total = total.forward_fill_labels()
+        return self.df_total
 
-    def format_remaining_data(self):
+    def format_remaining_data(self) -> pd.DataFrame:
+        """
+           Handles missing values in the DataFrame by applying a predefined strategy.
+
+           This method processes the remaining data in `df_a1` by using `TransformUtils.handle_null_values()`
+           to replace or remove NaN values, ensuring data consistency before final export.
+
+           Returns:
+           pd.DataFrame: The cleaned DataFrame with handled missing values.
+           """
+
         self.df_a1 = TransformUtils.handle_null_values(self.df_a1)
         return self.df_a1
 
-    def add_static_data(self):
+    def add_static_data(self) -> pd.DataFrame:
+        """
+        Adds static values to specific columns in the DataFrame.
+
+        Returns:
+        pd.DataFrame: The updated DataFrame with static values added.
+        """
         self.df_a1["TABLE"] = 'A1'
         self.df_a1["COUNTRY"] = 'EP'
         self.df_a1["RAIRPORT"] = 'EPGD'
         self.df_a1["FREIGHT ON BOARD"] = 0
         return self.df_a1
 
-    def add_date_columns(self):
-        date = TransformUtils.get_middle_record_data(self.df)
+    def add_date_columns(self) -> pd.DataFrame:
+        """
+        Extracts a reference date from the dataset and assigns year and period columns.
+
+        This method retrieves a middle-record date from the original dataset (`df`)
+        using `TransformUtils.get_middle_record_data()` and populates two new columns:
+
+        - "YEAR": Extracted as a two-digit year from the reference date.
+        - "PERIOD": Extracted as the month number from the reference date.
+
+
+        Returns:
+        pd.DataFrame: The updated DataFrame with static values added.
+
+        """
+
+        date = TransformUtils.get_middle_record_data(self.df_inflot)
         self.df_a1["YEAR"] = date.strftime("%y")
         self.df_a1["PERIOD"] = date.month
+        return self.df_a1
 
-    def correct_columns_order(self):
-        pass
+    def reorder_columns(self) -> pd.DataFrame:
+        """
+        Ensures the correct column order in the final DataFrame.
+
+        This method reorders `df_a1` columns based on a predefined list,
+        ensuring consistency with expected report structure.
+
+        Returns:
+        pd.DataFrame: The DataFrame with columns arranged in the correct order.
+        """
+        self.df_a1 = self.df_a1[REPORTS_COLUMNS]
+        return self.df_a1
 
     def transform(self):
         pass

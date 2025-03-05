@@ -1,20 +1,22 @@
 
 # import gus_a1_cargo_utils
 
-REPORTS_COLUMNS = [
-        "PAIRPORT",
-        "AD",
-        "SCHEDNS",
-        "PASSFREIGH",
-        "AIRLINEC",
-        "PAX ON BOARD",
-        "FREIGHT_ON_BOARD",
-        "FLIGHT",
-        "SEATAV",
-        "TABLE",
-        "COUNTRY",
-        "RAIRPORT"
-    ]
+REPORTS_COLUMNS = ["TABLE",
+                   "COUNTRY",
+                   "YEAR",
+                   "PERIOD",
+                   "RAIRPORT",
+                   "PAIRPORT",
+                   "AD",
+                   "SCHEDNS",
+                   "PASSFREIGH",
+                   "AIRLINEC",
+                   "AIRCRAFTTY",
+                   "PAX ON BOARD",
+                   "FREIGHT ON BOARD",
+                   "FLIGHT",
+                   "SEATAV",
+                   ]
 
 CARGO = {
 
@@ -61,3 +63,8 @@ FLIGHT_TYPES = {
         'Cargo/Regularny': 1
     }
 }
+
+ROMAN_TO_NUMERIC  = {
+    "I": "01", "II": "02", "III": "03", "IV": "04", "V": "05",
+    "VI": "06", "VII": "07", "VIII": "08", "IX": "09", "X": "10",
+    "XI": "11", "XII": "12"}

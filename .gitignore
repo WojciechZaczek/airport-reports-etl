@@ -4,3 +4,5 @@ logs/
 boxes/inflot/archive
 boxes/inflot/inbox
 boxes/GUS/reports
+temp.py
+boxes/total_table/inbox

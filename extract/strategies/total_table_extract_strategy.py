@@ -39,5 +39,5 @@ class TotalTableExtractStrategy(ExtractStrategy):
         if "Error" in destination_path:
             return destination_path
 
-        self.df = ExtractUtils.load_to_data_frame(destination_path)
+        self.df = pd.read_excel(destination_path, sheet_name="CARGO", header=None)
         return self.df
