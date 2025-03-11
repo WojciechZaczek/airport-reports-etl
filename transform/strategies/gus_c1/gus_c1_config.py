@@ -1,21 +1,49 @@
 
 REPORTS_COLUMNS = [
-        "PAIRPORT",
-        "AD",
-        "SCHEDNS",
-        "FLIGHT_COUNT",
         "TABLE",
         "COUNTRY",
-        "RAIRPORT"
+        "YEAR",
+        "PERIOD",
+        "RAIRPORT",
+        "AIRLINEC",
+        "PAX",
+        "TRANSITPAX",
+        "FREIGHT",
+        "AIRCRAFTM",
+        "AIRCRAFTMY"
+
     ]
 
 
 REPORT_MAPPINGS = {
-        "PAIRPORT": "PAIRPORT",
-        "AD": "AD",
-        "SCHEDNS": "SCHEDNS",
-        "FLIGHT_COUNT": "FLIGHT",
-        "TABLE": "C1",
-        "COUNTRY": "EP",
-        "RAIRPORT": "EPGD"
+
+        "Operacja": "FLIGHT",
+        "Przewoźnik ICAO": "AIRLINEC",
+        "Tranzyt": "TRANSITPAX"
+
     }
+
+REPORTS_ROWS = [
+                    'Rejsowy',
+                    'Przekierowany do GDN',
+                    'Czarterowy',
+                    'Czarterowy NREG',
+                    'Cargo',
+                    'Cargo/Regularny',
+                    'General Aviation',
+                    'General Aviation (kom)',
+                    'General Aviation(n-kom)',
+                    'Sanitarny',
+                    'Szkoleniowy',
+                    'Techniczny'
+
+                ]
+MAPPING_TMY = [
+        "General Aviation (kom)", "General Aviation(n-kom)", "General Aviation",
+        "Sanitarny", "Szkoleniowy", "Techniczny"
+]
+
+MAPPING_A1_TYPE = [
+            "Rejsowy", "Przekierowany do GDN", "Czarterowy",
+            "Czarterowy NREG", "Cargo", "Cargo/Regularny"
+        ]
