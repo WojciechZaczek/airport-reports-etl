@@ -1,3 +1,5 @@
+from typing import Union
+import pandas as pd
 from extract.strategies.abstract_extract_strategy import ExtractStrategy
 
 
@@ -32,7 +34,7 @@ class Extract:
         """
         self._strategy = strategy
 
-    def retrive_data(self):
+    def retrive_data(self) -> Union[pd.DataFrame, str]:
         """
         Retrieve specific data using the current extraction strategy.
 

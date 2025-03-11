@@ -24,8 +24,8 @@ class Transform:
         """
         self._strategy = strategy
 
-    def read_data(self):
+    def run(self):
         """
         :return:  Get data transform by the current strategy
         """
-        return self._strategy.get_data()
+        return self._strategy.transform()
