@@ -23,3 +23,4 @@ REPORT_MAPPINGS = {
         "COUNTRY": "COUNTRY",
         "RAIRPORT": "RAIRPORT"
     }
+
