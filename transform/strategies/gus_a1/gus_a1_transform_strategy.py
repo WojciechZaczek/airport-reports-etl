@@ -27,6 +27,27 @@ class A1TransformStrategy(TransformStrategy):
         """
         return self.df_a1
 
+    def run(self):
+        """
+        Executes the entire transformation process step by step.
+        This method ensures that all necessary transformations are applied in the correct order.
+
+        :return: Fully transformed DataFrame ready for reporting.
+        """
+        self.prepare_columns()
+        self.add_pax_onboard_column()
+        self.create_new_columns()
+        self.remove_unnecessary_rows()
+        self.remove_unnecessary_columns()
+        self.aggregate_report()
+        self.modify_AD_data()
+        self.add_static_data()
+        self.add_date_columns()
+        self.format_remaining_data()
+        self.reorder_columns()
+
+        return self.df_a1
+
     def prepare_columns(self) -> pd.DataFrame:
         """
         Cleans and renames columns in the DataFrame to match the A1 report structure.
@@ -211,5 +232,4 @@ class A1TransformStrategy(TransformStrategy):
         self.df_a1 = self.df_a1[REPORTS_COLUMNS]
         return self.df_a1
 
-    def transform(self):
-        pass
+

@@ -23,6 +23,19 @@ class C1TransformStrategy(TransformStrategy):
         """
         return self.df_c1
 
+    def run(self):
+
+        self.prepare_columns()
+        self.add_columns()
+        self.remove_unnecessary_rows()
+        self.remove_unnecessary_columns()
+        self.combine_aggregated_data()
+        self.add_static_data()
+        self.add_date_columns()
+        self.reorder_columns()
+
+        return self.df_c1
+
     def prepare_columns(self) -> pd.DataFrame:
         """
         Cleans and renames columns in the DataFrame to match the C1 report structure.
