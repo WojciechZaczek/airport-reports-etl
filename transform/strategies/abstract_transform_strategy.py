@@ -9,4 +9,3 @@ class TransformStrategy(ABC):
 
         :return: None
         """
-        pass
