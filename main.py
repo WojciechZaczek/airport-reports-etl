@@ -19,60 +19,26 @@ if not os.path.exists(file_path_inflot):
 else:
     print(f"File {file_path_inflot} exists.")
 
+
 strategy_inflot = InflotExtractStrategy(file_path_inflot)
 inflot_report_df = strategy_inflot.retrive_data()
 
 strategy_total = TotalTableExtractStrategy(file_path_total)
 total_report_df = strategy_total.retrive_data()
 
-transformer = A1TransformStrategy(inflot_report_df, total_report_df)
+a1_transformer = A1TransformStrategy(inflot_report_df, total_report_df)
+a1_transformer.run()
 
 
-# a1_transform_strategy = A1TransformStrategy(inflot_report_df)
-# transformer = Transform(
-#     a1_transform_strategy
-# )
-# transformer.run()
-# transformer.fill_cargo_from_total()
+b1_transformer = B1TransformStrategy(a1_transformer.df_a1)
+b1_transformer.run()
 
 
-transformer.df_total.to_excel(r"C:\Users\wojci\PycharmProjects\airport-reports-etl\boxes\GUS\reports\test_total.xlsx", index=False)
-transformer.prepare_columns()
-transformer.add_pax_onboard_column()
-transformer.create_new_columns()
-print(transformer.df_a1.info())
-transformer.remove_unnecessary_rows()
-transformer.remove_unnecessary_columns()
-transformer.aggregate_report()
-transformer.modify_AD_data()
-transformer.add_static_data()
-transformer.add_date_columns()
-transformer.format_remaining_data()
-transformer.reorder_columns()
-transformer.df_a1.to_excel(r"C:\Users\wojci\PycharmProjects\airport-reports-etl\boxes\GUS\reports\test_a1.xlsx", index=False)
+c1_transformer = C1TransformStrategy(inflot_report_df)
+c1_transformer.run()
 
 
-b1_transformer = B1TransformStrategy(transformer.df_a1)
-b1_transformer.change_columns_names()
-b1_transformer.change_static_data()
-b1_transformer.delete_unnecessary_columns()
+a1_transformer.df_total.to_excel(r"C:\Users\wojci\PycharmProjects\airport-reports-etl\boxes\GUS\reports\test_total.xlsx", index=False)
+a1_transformer.df_a1.to_excel(r"C:\Users\wojci\PycharmProjects\airport-reports-etl\boxes\GUS\reports\test_a1.xlsx", index=False)
+c1_transformer.df_c1.to_excel(r"C:\Users\wojci\PycharmProjects\airport-reports-etl\boxes\GUS\reports\test_c1.xlsx", index=False)
 b1_transformer.df_b1.to_excel(r"C:\Users\wojci\PycharmProjects\airport-reports-etl\boxes\GUS\reports\test_b1.xlsx", index=False)
-
-transformer_c1 = C1TransformStrategy(inflot_report_df)
-transformer_c1.prepare_columns()
-transformer_c1.add_columns()
-transformer_c1.remove_unnecessary_rows()
-transformer_c1.remove_unnecessary_columns()
-transformer_c1.combine_aggregated_data()
-transformer_c1.add_static_data()
-transformer_c1.add_date_columns()
-transformer_c1.reorder_columns()
-
-
-transformer_c1.df_c1.to_excel(r"C:\Users\wojci\PycharmProjects\airport-reports-etl\boxes\GUS\reports\test_c1.xlsx", index=False)
-
-
-
-
-# # transformer.run()
-# # transformer_b1()

@@ -25,6 +25,19 @@ class B1TransformStrategy(TransformStrategy):
         """
         return self.df_b1
 
+    def run(self):
+        """
+        Executes the entire transformation process step by step.
+        This method ensures that all necessary transformations are applied in the correct order.
+
+        :return: Fully transformed DataFrame ready for reporting.
+        """
+        self.change_columns_names()
+        self.change_static_data()
+        self.delete_unnecessary_columns()
+        self.reorder_columns()
+        return self.df_b1
+
     def change_columns_names(self) -> pd.DataFrame:
         """
         Renames the column 'PAX ON BOARD' to 'PAX CARRIED'.
