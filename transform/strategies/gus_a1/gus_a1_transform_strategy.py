@@ -1,7 +1,8 @@
 import pandas as pd
-from transform.strategies.gus_a1.gus_a1_cargo_utils import CargoData
+
 from transform.strategies.abstract_transform_strategy import TransformStrategy
-from transform.strategies.gus_a1.gus_a1_config import REPORT_MAPPINGS, REPORTS_ROWS, FLIGHT_TYPES,REPORTS_COLUMNS
+from transform.strategies.cargo_utils.cargo_utils import CargoData
+from transform.strategies.gus_a1.gus_a1_config import REPORT_MAPPINGS, REPORTS_ROWS, FLIGHT_TYPES, REPORTS_COLUMNS
 from transform.transform_utils import TransformUtils
 
 
@@ -9,6 +10,7 @@ class A1TransformStrategy(TransformStrategy):
     """
     Strategy class for transforming data into the A1 report format.
     """
+
     def __init__(self, df_inflot: pd.DataFrame, df_total: pd.DataFrame) -> None:
         """
         Initializes the transformation strategy with the input DataFrame.
@@ -27,28 +29,7 @@ class A1TransformStrategy(TransformStrategy):
         """
         return self.df_a1
 
-    def run(self):
-        """
-        Executes the entire transformation process step by step.
-        This method ensures that all necessary transformations are applied in the correct order.
-
-        :return: Fully transformed DataFrame ready for reporting.
-        """
-        self.prepare_columns()
-        self.add_pax_onboard_column()
-        self.create_new_columns()
-        self.remove_unnecessary_rows()
-        self.remove_unnecessary_columns()
-        self.aggregate_report()
-        self.modify_AD_data()
-        self.add_static_data()
-        self.add_date_columns()
-        self.format_remaining_data()
-        self.reorder_columns()
-
-        return self.df_a1
-
-    def prepare_columns(self) -> pd.DataFrame:
+    def _prepare_columns(self) -> None:
         """
         Cleans and renames columns in the DataFrame to match the A1 report structure.
 
@@ -60,9 +41,9 @@ class A1TransformStrategy(TransformStrategy):
         mapping = REPORT_MAPPINGS
         self.df_a1 = self.df_inflot
         self.df_a1 = TransformUtils.rename_columns(self.df_a1, mapping)
-        return self.df_a1
 
-    def add_pax_onboard_column(self) -> pd.DataFrame:
+
+    def _add_pax_onboard_column(self) -> None:
         """
         Creates a new column 'PAX ON BOARD' by summing 'TTL' (total passengers) and 'Infant'.
 
@@ -73,9 +54,8 @@ class A1TransformStrategy(TransformStrategy):
         :return: Pandas DataFrame with the added 'PAX ON BOARD' column.
         """
         self.df_a1["PAX ON BOARD"] = self.df_a1["TTL"].fillna(0) + self.df_a1["Infant"].fillna(0)
-        return self.df_a1
 
-    def create_new_columns(self) -> pd.DataFrame:
+    def _create_new_columns(self) -> None:
         """
         Creates two new columns: 'PASSFREIGH' and 'SCHEDNS' based on the flight type.
 
@@ -92,9 +72,9 @@ class A1TransformStrategy(TransformStrategy):
         self.df_a1["PASSFREIGH"] = self.df_a1["Typ rejsu"].map(FLIGHT_TYPES["PASSFREIGH"])
         self.df_a1["SCHEDNS"] = self.df_a1["Typ rejsu"].map(FLIGHT_TYPES["SCHEDNS"])
         self.df_a1["FLIGHT"] = self.df_a1['AD']
-        return self.df_a1
 
-    def remove_unnecessary_rows(self) -> pd.DataFrame:
+
+    def _remove_unnecessary_rows(self) -> None:
         """
         Remove unnecessary rows based on the type of flight.
 
@@ -107,9 +87,9 @@ class A1TransformStrategy(TransformStrategy):
         """
         col_filter = "Typ rejsu"
         self.df_a1 = TransformUtils.keep_relevant_rows(self.df_a1, col_filter, REPORTS_ROWS)
-        return self.df_a1
 
-    def remove_unnecessary_columns(self) -> pd.DataFrame:
+
+    def _remove_unnecessary_columns(self) -> None:
         """
         Remove unnecessary columns from the DataFrame.
         This method ensures that only the relevant columns required for the A1 report
@@ -120,20 +100,20 @@ class A1TransformStrategy(TransformStrategy):
         pd.DataFrame: A DataFrame containing only the necessary columns for the report.
         """
         mapping = [
-        "PAIRPORT",
-        "AD",
-        "SCHEDNS",
-        "PASSFREIGH",
-        "AIRLINEC",
-        "AIRCRAFTTY",
-        "PAX ON BOARD",
-        "SEATAV",
-        "FLIGHT"
-    ]
+            "PAIRPORT",
+            "AD",
+            "SCHEDNS",
+            "PASSFREIGH",
+            "AIRLINEC",
+            "AIRCRAFTTY",
+            "PAX ON BOARD",
+            "SEATAV",
+            "FLIGHT"
+        ]
         self.df_a1 = TransformUtils.keep_relevant_columns(self.df_a1, mapping)
-        return self.df_a1
 
-    def aggregate_report(self) -> pd.DataFrame:
+
+    def _aggregate_report(self) -> None:
         """
         Aggregates the report by summing PAX_ON_BOARD and SEATAV,
         and counting occurrences of AD (stored in a new column FLIGHT).
@@ -149,9 +129,8 @@ class A1TransformStrategy(TransformStrategy):
             "SEATAV": sum,
             "FLIGHT": "count"
         })
-        return self.df_a1
 
-    def modify_AD_data(self) -> pd.DataFrame:
+    def _modify_AD_data(self) -> None:
         """
         Modify the 'AD' column values based on a predefined mapping.
 
@@ -163,15 +142,9 @@ class A1TransformStrategy(TransformStrategy):
         """
         mapping = {"P": 1, "O": 2}
         self.df_a1 = TransformUtils.replacing_data(self.df_a1, 'AD', mapping)
-        return self.df_a1
 
-    def fill_cargo_from_total(self) -> pd.DataFrame:
-        total = CargoData(self.df_total)
-        self.df_total = total.preparing_columns()
-        self.df_total = total.forward_fill_labels()
-        return self.df_total
 
-    def format_remaining_data(self) -> pd.DataFrame:
+    def _format_remaining_data(self) -> pd.DataFrame:
         """
            Handles missing values in the DataFrame by applying a predefined strategy.
 
@@ -185,7 +158,7 @@ class A1TransformStrategy(TransformStrategy):
         self.df_a1 = TransformUtils.handle_null_values(self.df_a1)
         return self.df_a1
 
-    def add_static_data(self) -> pd.DataFrame:
+    def _add_static_data(self) -> None:
         """
         Adds static values to specific columns in the DataFrame.
 
@@ -195,10 +168,9 @@ class A1TransformStrategy(TransformStrategy):
         self.df_a1["TABLE"] = 'A1'
         self.df_a1["COUNTRY"] = 'EP'
         self.df_a1["RAIRPORT"] = 'EPGD'
-        self.df_a1["FREIGHT ON BOARD"] = 0
-        return self.df_a1
 
-    def add_date_columns(self) -> pd.DataFrame:
+
+    def _add_date_columns(self) -> None:
         """
         Extracts a reference date from the dataset and assigns year and period columns.
 
@@ -217,9 +189,35 @@ class A1TransformStrategy(TransformStrategy):
         date = TransformUtils.get_middle_record_data(self.df_inflot)
         self.df_a1["YEAR"] = date.strftime("%y")
         self.df_a1["PERIOD"] = date.month
-        return self.df_a1
 
-    def reorder_columns(self) -> pd.DataFrame:
+    def _fill_cargo_from_total(self) -> None:
+        total = CargoData(self.df_total)
+
+        date = TransformUtils.get_middle_record_data(self.df_inflot)
+        year = int(date.strftime("%Y"))
+        month = date.month
+        df_cargo = total.run(year, month)
+        print(df_cargo)
+
+
+
+        df_merged = self.df_a1.merge(
+            df_cargo,
+            how='left',
+            on=['AIRLINEC', 'PAIRPORT', 'AD']
+
+        )
+
+        df_merged['FREIGHT ON BOARD FINAL'] = 0.0
+        idx_max_pax = df_merged.groupby(['AIRLINEC', 'PAIRPORT', 'AD'])['PAX ON BOARD'].idxmax()
+        df_merged.loc[idx_max_pax, 'FREIGHT ON BOARD FINAL'] = df_merged.loc[idx_max_pax, 'FREIGHT ON BOARD'].fillna(0)
+        df_merged['FREIGHT ON BOARD'] = df_merged['FREIGHT ON BOARD FINAL']
+        df_merged.drop(columns=['FREIGHT ON BOARD FINAL'], inplace=True)
+
+        self.df_a1 = df_merged
+
+
+    def _reorder_columns(self) -> None:
         """
         Ensures the correct column order in the final DataFrame.
 
@@ -230,6 +228,25 @@ class A1TransformStrategy(TransformStrategy):
         pd.DataFrame: The DataFrame with columns arranged in the correct order.
         """
         self.df_a1 = self.df_a1[REPORTS_COLUMNS]
+
+
+    def run(self):
+        """
+        Executes the entire transformation process step by step.
+        This method ensures that all necessary transformations are applied in the correct order.
+
+        :return: Fully transformed DataFrame ready for reporting.
+        """
+        self._prepare_columns()
+        self._add_pax_onboard_column()
+        self._create_new_columns()
+        self._remove_unnecessary_rows()
+        self._remove_unnecessary_columns()
+        self._aggregate_report()
+        self._modify_AD_data()
+        self._add_static_data()
+        self._add_date_columns()
+        self._format_remaining_data()
+        self._fill_cargo_from_total()
+        self._reorder_columns()
         return self.df_a1
-
-
