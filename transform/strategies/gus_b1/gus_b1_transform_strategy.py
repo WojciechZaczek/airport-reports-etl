@@ -1,7 +1,7 @@
 import pandas as pd
 from transform.strategies.abstract_transform_strategy import TransformStrategy
 from transform.transform_utils import TransformUtils
-from transform.strategies.gus_b1.gus_b1_config import REPORTS_COLUMNS, REPORT_MAPPINGS
+from transform.strategies.gus_b1.gus_b1_config import REPORTS_COLUMNS
 
 
 class B1TransformStrategy(TransformStrategy):
@@ -25,20 +25,8 @@ class B1TransformStrategy(TransformStrategy):
         """
         return self.df_b1
 
-    def run(self):
-        """
-        Executes the entire transformation process step by step.
-        This method ensures that all necessary transformations are applied in the correct order.
 
-        :return: Fully transformed DataFrame ready for reporting.
-        """
-        self.change_columns_names()
-        self.change_static_data()
-        self.delete_unnecessary_columns()
-        self.reorder_columns()
-        return self.df_b1
-
-    def change_columns_names(self) -> pd.DataFrame:
+    def _change_columns_names(self) -> None:
         """
         Renames the column 'PAX ON BOARD' to 'PAX CARRIED'.
 
@@ -47,9 +35,8 @@ class B1TransformStrategy(TransformStrategy):
         :return: Pandas DataFrame with updated column names.
         """
         self.df_b1 = self.df_b1.rename(columns={"PAX ON BOARD": "PAX CARRIED"})
-        return self.df_b1
 
-    def change_static_data(self) -> pd.DataFrame:
+    def _change_static_data(self) -> None:
         """
         Adds static values to specific columns required in the B1 report.
 
@@ -58,9 +45,8 @@ class B1TransformStrategy(TransformStrategy):
         :return: Pandas DataFrame with updated static values.
         """
         self.df_b1["TABLE"] = 'B1'
-        return self.df_b1
 
-    def delete_unnecessary_columns(self) -> pd.DataFrame:
+    def _delete_unnecessary_columns(self) -> None:
         """
         Removes columns that are not required in the B1 report.
 
@@ -69,9 +55,8 @@ class B1TransformStrategy(TransformStrategy):
         :return: Pandas DataFrame containing only the relevant columns.
         """
         self.df_b1 = TransformUtils.keep_relevant_columns(self.df_b1, REPORTS_COLUMNS)
-        return self.df_b1
 
-    def reorder_columns(self) -> pd.DataFrame:
+    def _reorder_columns(self) -> None:
         """
         Ensures the correct column order in the final DataFrame.
 
@@ -81,8 +66,18 @@ class B1TransformStrategy(TransformStrategy):
         :return: Pandas DataFrame with columns arranged in the correct order.
         """
         self.df_b1 = self.df_b1[REPORTS_COLUMNS]
+
+    def run(self):
+        """
+        Executes the entire transformation process step by step.
+        This method ensures that all necessary transformations are applied in the correct order.
+
+        :return: Fully transformed DataFrame ready for reporting.
+        """
+        self._change_columns_names()
+        self._change_static_data()
+        self._delete_unnecessary_columns()
+        self._reorder_columns()
         return self.df_b1
-
-
 
 

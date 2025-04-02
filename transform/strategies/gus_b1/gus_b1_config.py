@@ -1,7 +1,9 @@
 REPORTS_COLUMNS = [
         "TABLE",
         "COUNTRY",
-        "YEAR", "PERIOD",
+        "YEAR",
+        "PERIOD",
+        "RAIRPORT",
         "PAIRPORT",
         "AD",
         "SCHEDNS",

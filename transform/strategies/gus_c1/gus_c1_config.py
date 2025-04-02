@@ -19,7 +19,7 @@ REPORT_MAPPINGS = {
 
         "Operacja": "FLIGHT",
         "Przewoźnik ICAO": "AIRLINEC",
-        "Tranzyt": "TRANSITPAX"
+        "Tranzyt": "TRANSITPAX",
 
     }
 
