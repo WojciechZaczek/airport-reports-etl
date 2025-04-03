@@ -20,6 +20,8 @@ class A1TransformStrategy(TransformStrategy):
         self.df_total = df_total
         self.df_inflot = df_inflot
         self.df_a1 = pd.DataFrame()
+        self.year = None
+        self.month = None
 
     def get_data(self) -> pd.DataFrame:
         """
@@ -41,6 +43,20 @@ class A1TransformStrategy(TransformStrategy):
         mapping = REPORT_MAPPINGS
         self.df_a1 = self.df_inflot
         self.df_a1 = TransformUtils.rename_columns(self.df_a1, mapping)
+
+    def _modify_fedex(self) -> None:
+        """
+        Replaces placeholder airline code 'XXX' with the correct code 'FPO'.
+
+        This is a data correction step specific for FedEx flights where
+        the airline code 'XXX' in the raw data should be replaced with 'FPO'.
+
+        Returns:
+            None: The method modifies the DataFrame in place.
+        """
+
+        mapping = {"XXX": "FPO"}
+        self.df_a1 = TransformUtils.replacing_data(self.df_a1, "AIRLINEC", mapping)
 
 
     def _add_pax_onboard_column(self) -> None:
@@ -73,7 +89,6 @@ class A1TransformStrategy(TransformStrategy):
         self.df_a1["SCHEDNS"] = self.df_a1["Typ rejsu"].map(FLIGHT_TYPES["SCHEDNS"])
         self.df_a1["FLIGHT"] = self.df_a1['AD']
 
-
     def _remove_unnecessary_rows(self) -> None:
         """
         Remove unnecessary rows based on the type of flight.
@@ -87,7 +102,6 @@ class A1TransformStrategy(TransformStrategy):
         """
         col_filter = "Typ rejsu"
         self.df_a1 = TransformUtils.keep_relevant_rows(self.df_a1, col_filter, REPORTS_ROWS)
-
 
     def _remove_unnecessary_columns(self) -> None:
         """
@@ -111,7 +125,6 @@ class A1TransformStrategy(TransformStrategy):
             "FLIGHT"
         ]
         self.df_a1 = TransformUtils.keep_relevant_columns(self.df_a1, mapping)
-
 
     def _aggregate_report(self) -> None:
         """
@@ -143,7 +156,6 @@ class A1TransformStrategy(TransformStrategy):
         mapping = {"P": 1, "O": 2}
         self.df_a1 = TransformUtils.replacing_data(self.df_a1, 'AD', mapping)
 
-
     def _format_remaining_data(self) -> pd.DataFrame:
         """
            Handles missing values in the DataFrame by applying a predefined strategy.
@@ -169,8 +181,7 @@ class A1TransformStrategy(TransformStrategy):
         self.df_a1["COUNTRY"] = 'EP'
         self.df_a1["RAIRPORT"] = 'EPGD'
 
-
-    def _add_date_columns(self) -> None:
+    def add_date_columns(self) -> None:
         """
         Extracts a reference date from the dataset and assigns year and period columns.
 
@@ -187,8 +198,16 @@ class A1TransformStrategy(TransformStrategy):
         """
 
         date = TransformUtils.get_middle_record_data(self.df_inflot)
-        self.df_a1["YEAR"] = date.strftime("%y")
-        self.df_a1["PERIOD"] = date.month
+        self.year = date.strftime("%y")
+        self.month = date.month
+        self.df_a1["YEAR"] = self.year
+        self.df_a1["PERIOD"] = self.month
+
+    def get_year_month(self) -> tuple[int, int]:
+        """
+        Returns saved year and month.
+        """
+        return self.year, self.month
 
     def _fill_cargo_from_total(self) -> None:
         total = CargoData(self.df_total)
@@ -198,8 +217,6 @@ class A1TransformStrategy(TransformStrategy):
         month = date.month
         df_cargo = total.run(year, month)
         print(df_cargo)
-
-
 
         df_merged = self.df_a1.merge(
             df_cargo,
@@ -216,7 +233,6 @@ class A1TransformStrategy(TransformStrategy):
 
         self.df_a1 = df_merged
 
-
     def _reorder_columns(self) -> None:
         """
         Ensures the correct column order in the final DataFrame.
@@ -229,7 +245,6 @@ class A1TransformStrategy(TransformStrategy):
         """
         self.df_a1 = self.df_a1[REPORTS_COLUMNS]
 
-
     def run(self):
         """
         Executes the entire transformation process step by step.
@@ -238,6 +253,7 @@ class A1TransformStrategy(TransformStrategy):
         :return: Fully transformed DataFrame ready for reporting.
         """
         self._prepare_columns()
+        self._modify_fedex()
         self._add_pax_onboard_column()
         self._create_new_columns()
         self._remove_unnecessary_rows()
@@ -245,7 +261,8 @@ class A1TransformStrategy(TransformStrategy):
         self._aggregate_report()
         self._modify_AD_data()
         self._add_static_data()
-        self._add_date_columns()
+        self.add_date_columns()
+        self.get_year_month()
         self._format_remaining_data()
         self._fill_cargo_from_total()
         self._reorder_columns()
