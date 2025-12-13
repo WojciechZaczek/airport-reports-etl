@@ -1,9 +1,9 @@
 import pandas as pd
 
-from transform.strategies.abstract_transform_strategy import TransformStrategy
-from transform.strategies.cargo_utils.cargo_utils import CargoData
-from transform.strategies.gus_a1.gus_a1_config import REPORT_MAPPINGS, REPORTS_ROWS, FLIGHT_TYPES, REPORTS_COLUMNS
-from transform.transform_utils import TransformUtils
+from ETL.transform.strategies.abstract_transform_strategy import TransformStrategy
+from ETL.transform.strategies.cargo_utils.cargo_utils import CargoData
+from ETL.transform.strategies.gus_a1.gus_a1_config import REPORT_MAPPINGS, REPORTS_ROWS, FLIGHT_TYPES, REPORTS_COLUMNS
+from ETL.transform.transform_utils import TransformUtils
 
 
 class A1TransformStrategy(TransformStrategy):
@@ -135,11 +135,11 @@ class A1TransformStrategy(TransformStrategy):
         pd.DataFrame: The aggregated DataFrame.
         """
         self.df_a1 = self.df_a1.groupby(
-            ["PAIRPORT", "FLIGHT", "AD", "SCHEDNS", "PASSFREIGH", "AIRLINEC", "AIRCRAFTTY"],
+            ["PAIRPORT", "AD", "SCHEDNS", "PASSFREIGH", "AIRLINEC", "AIRCRAFTTY"],
             as_index=False
         ).agg({
-            "PAX ON BOARD": sum,
-            "SEATAV": sum,
+            "PAX ON BOARD": "sum",
+            "SEATAV": "sum",
             "FLIGHT": "count"
         })
 
@@ -208,6 +208,8 @@ class A1TransformStrategy(TransformStrategy):
         Returns saved year and month.
         """
         return self.year, self.month
+
+
 
     def _fill_cargo_from_total(self) -> None:
         total = CargoData(self.df_total)

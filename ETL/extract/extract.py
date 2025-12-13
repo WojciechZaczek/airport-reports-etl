@@ -1,6 +1,6 @@
 from typing import Union
 import pandas as pd
-from extract.strategies.abstract_extract_strategy import ExtractStrategy
+from ETL.extract.strategies.abstract_extract_strategy import ExtractStrategy
 
 
 class Extract:

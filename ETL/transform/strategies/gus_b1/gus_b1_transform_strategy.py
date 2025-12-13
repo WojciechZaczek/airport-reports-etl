@@ -1,7 +1,7 @@
 import pandas as pd
-from transform.strategies.abstract_transform_strategy import TransformStrategy
-from transform.transform_utils import TransformUtils
-from transform.strategies.gus_b1.gus_b1_config import REPORTS_COLUMNS
+from ETL.transform.strategies.abstract_transform_strategy import TransformStrategy
+from ETL.transform.transform_utils import TransformUtils
+from ETL.transform.strategies.gus_b1.gus_b1_config import REPORTS_COLUMNS
 
 
 class B1TransformStrategy(TransformStrategy):

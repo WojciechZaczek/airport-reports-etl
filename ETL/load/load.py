@@ -1,4 +1,4 @@
-from load.strategies.abstract_load_strategy import LoadStrategy
+from ETL.load.load import LoadStrategy
 
 
 class Load:

@@ -1,4 +1,4 @@
-from transform.strategies.abstract_transform_strategy import TransformStrategy
+from ETL.transform.transform import TransformStrategy
 
 
 class Transform:

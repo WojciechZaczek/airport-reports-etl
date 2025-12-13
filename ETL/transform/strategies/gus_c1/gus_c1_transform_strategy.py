@@ -1,8 +1,8 @@
 import pandas as pd
-from transform.strategies.cargo_utils.cargo_utils import CargoData
-from transform.strategies.abstract_transform_strategy import TransformStrategy
-from transform.transform_utils import TransformUtils
-from transform.strategies.gus_c1.gus_c1_config import REPORTS_COLUMNS, REPORT_MAPPINGS, REPORTS_ROWS, \
+from ETL.transform.strategies.cargo_utils.cargo_utils import CargoData
+from ETL.transform.strategies.abstract_transform_strategy import TransformStrategy
+from ETL.transform.transform_utils import TransformUtils
+from ETL.transform.strategies.gus_c1.gus_c1_config import REPORTS_COLUMNS, REPORT_MAPPINGS, REPORTS_ROWS, \
     MAPPING_TMY, MAPPING_A1_TYPE
 
 

@@ -1,5 +1,5 @@
 import pandas as pd
-from transform.strategies.cargo_utils.cargo_config import (
+from ETL.transform.strategies.cargo_utils.cargo_config import (
     CARGO_DROP,
     CARGO_AIRLINEC_MAPPING,
     CARGO_PAIRPORT_MAPPING,
@@ -125,6 +125,6 @@ class CargoData:
         self._finalize_transposed_data()
         self._normalize_and_aggregate()
 
-        self.cargo_df.to_excel(r"D:\Raporty\cargo.xlsx", index=False)
+        self.cargo_df.to_excel(r"boxes\temporarly\cargo.xlsx", index=False)
 
         return self.cargo_df

@@ -1,7 +1,7 @@
 import os
 import pandas as pd
-from load.load_utils import LoadUtils
-from load.strategies.abstract_load_strategy import LoadStrategy
+from ETL.load.load_utils import LoadUtils
+from ETL.load.strategies.abstract_load_strategy import LoadStrategy
 
 
 class ExcelLoadStrategy(LoadStrategy):
